@@ -1,0 +1,165 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+</html>
+<h1>Overall Comments</h1>
+<p>All but solution 5 represents a working start for a solution that covers the first part of the requirement. Faults in misunderstanding of what "comment" means here can be traced to requirement wording issues.</p>
+<h2>Solution 1</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement:</span>
+    <span class="c1"># all variable descriptions and comments shall be in english.</span>
+    <span class="c1"># Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:33.345230 seconds</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    
+    <span class="kn">from</span> <span class="nn">langdetect</span> <span class="kn">import</span> <span class="n">detect</span>
+    
+    <span class="k">def</span> <span class="nf">check_english_description_and_comments</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">description</span>
+            <span class="k">if</span> <span class="n">description</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">description</span><span class="o">.</span><span class="n">isascii</span><span class="p">():</span>  <span class="c1"># Check if description contains non-ASCII characters</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">lang</span> <span class="o">=</span> <span class="n">detect</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>  <span class="c1"># Try to detect the language of the description</span>
+                    <span class="k">if</span> <span class="n">lang</span> <span class="o">!=</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>  <span class="c1"># If it&#39;s not English</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">except</span><span class="p">:</span>  <span class="c1"># In case of an error while detecting the language</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to detect language for variable </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">comments</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">comments</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">comments</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">comment</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">comment</span><span class="o">.</span><span class="n">isascii</span><span class="p">():</span>  <span class="c1"># Check if comment contains non-ASCII characters</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">lang</span> <span class="o">=</span> <span class="n">detect</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>  <span class="c1"># Try to detect the language of the comment</span>
+                        <span class="k">if</span> <span class="n">lang</span> <span class="o">!=</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>  <span class="c1"># If it&#39;s not English</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+                    <span class="k">except</span><span class="p">:</span>  <span class="c1"># In case of an error while detecting the language</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to detect language for variable </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s comment&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    </pre></div>
+
+<h3>Comments</h3>
+<p class="review">Solution has correctly identified how to access all variables and where to find the variable description. 
+    Requirement phrasing caused misunderstanding of what a comment means. 
+    Language classification through langdetect.detect
+</p>
+
+<h2>Solution 2</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: all variable descriptions and comments shall be in english. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:14.665975 seconds</span>
+    <span class="k">def</span> <span class="nf">check_variable_descriptions_and_comments_in_english</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_english</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">description</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">getComments</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_english</span><span class="p">(</span><span class="n">comment</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    <span class="k">def</span> <span class="nf">is_english</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="c1"># Use a simple English word list, you can improve it as per your need.</span>
+        <span class="n">english_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">,</span> <span class="s2">&quot;this&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">])</span>
+        <span class="n">words_in_text</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">english_words</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">words_in_text</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    </pre></div>
+    
+<h3>Comments</h3>
+<p class="review">Solution used a basic dictionary-based approach of finding enough english words. No reliance on external packages, but difficult to maintain a valid list of words.
+</p>
+<h2>Solution 3</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: all variable descriptions and comments shall be in english. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:12.555684 seconds</span>
+    <span class="err">```</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    <span class="kn">from</span> <span class="nn">langdetect</span> <span class="kn">import</span> <span class="n">detect</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_descriptions_and_comments</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">lang</span> <span class="o">=</span> <span class="n">detect</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">lang</span> <span class="o">!=</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variable </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has non-English description: &#39;</span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">comment</span><span class="p">:</span>
+                <span class="n">comment</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">lang</span> <span class="o">=</span> <span class="n">detect</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">lang</span> <span class="o">!=</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variable </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has non-English comment: &#39;</span><span class="si">{</span><span class="n">comment</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+    
+        <span class="k">return</span> <span class="s2">&quot;All variable descriptions and comments are in English&quot;</span>
+    <span class="err">```</span>
+    </pre></div>
+
+
+    <h3>Comments</h3>
+    <p class="review">Solution is a scaled-down version of Solution 1.
+    </p>
+
+<h2>Solution 4</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: all variable descriptions and comments shall be in english. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:14.819234 seconds</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    <span class="kn">from</span> <span class="nn">langdetect</span> <span class="kn">import</span> <span class="n">detect</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_descriptions</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">detect</span><span class="p">(</span><span class="n">description</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Variable description is not in English</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">comment</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">detect</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Variable comment is not in English</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># All variable descriptions and comments are in English</span>
+    
+    <span class="c1"># Example usage:</span>
+    <span class="n">program</span> <span class="o">=</span> <span class="n">Program</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># Initialize your Program instance here</span>
+    <span class="k">if</span> <span class="n">check_variable_descriptions</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All variable descriptions and comments are in English.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Some variable descriptions or comments are not in English.&quot;</span><span class="p">)</span>
+    </pre></div>
+
+
+    <h3>Comments</h3>
+    <p class="review">Solution does not output enough information on which variable is the problem.
+    </p>
+    
+    <h2>Solution 5</h2>
+    <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+        <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: all variable descriptions and comments shall be in english. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+        <span class="c1"># Generation time: 0:00:17.968427 seconds</span>
+        <span class="kn">import</span> <span class="nn">re</span>
+        
+        <span class="k">def</span> <span class="nf">check_english_program</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+            <span class="n">var_info</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">getVarInfo</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="n">var_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="s2">&quot;description&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+                    <span class="c1"># Check if the description starts with a non-English character</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z]+&#39;</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variable </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> has non-English description: </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">getBackwardTrace</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">PathDivide</span><span class="o">.</span><span class="n">unpack_</span> <span class="n">pathlist</span><span class="p">([</span><span class="n">expr</span><span class="p">]):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">VarBlock</span><span class="p">)</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">getVarExpr</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">expression</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">getVarExpr</span><span class="p">()</span>
+                        <span class="c1"># Check if the expression starts with a non-English character</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z]+&#39;</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Expression for variable </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> has non-English description: </span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;All descriptions and comments are in English&quot;</span>
+        </pre></div>
+
+<h3>Comments</h3>
+<p class="review">Overall the worst solution. Misunderstands how `var_info` is used. Relies only on non-ascii check => will have false negatives. 
+    The second for-loop is a poor way to access the constant expressions.
+</p>

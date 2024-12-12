@@ -1,2 +1,71 @@
 <h1>AI Test Project</h1>
 <p>This is the companion web page for the Checker Development Companion work in Software Center Project 63</p>
+
+<h2>The Generation Script</h2>
+<p>The following is the script used to generate solutions for the given requirements.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+    <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+    
+    <span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+    
+    <span class="n">REQ</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;REQ1&quot;</span><span class="p">:</span> <span class="s2">&quot;all variable descriptions and comments shall be in english.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;REQ2&quot;</span><span class="p">:</span> <span class="s2">&quot;no blocks shall overlap.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;REQ3&quot;</span><span class="p">:</span> <span class="s2">&quot;no signal lines shall overlap or cross over.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;REQ4&quot;</span><span class="p">:</span> <span class="s2">&quot;the number of variables shall be less than 20.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;REQ5&quot;</span><span class="p">:</span> <span class="s2">&quot;no variable names shall be longer than 30 characters.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;REQ6&quot;</span><span class="p">:</span> <span class="s2">&quot;the combined complexity of program inputs shall not exceed 100.&quot;</span>
+    <span class="p">}</span>
+    
+    <span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF&quot;</span>
+    <span class="p">]</span>
+    <span class="n">NR_OF_TRIES_PER_MODEL_REQ_PAIR</span> <span class="o">=</span> <span class="mi">5</span>
+    
+    
+    <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+        <span class="n">system_prompt</span> <span class="o">=</span> <span class="s2">&quot;You are a helpful, smart and efficient AI assistant. You always fulfill the user&#39;s requests to the best of your ability.&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;./program.py&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">starting_context</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    
+        <span class="n">system_prompt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">starting_context</span>
+    
+        <span class="n">startPrompt</span> <span class="o">=</span> <span class="s2">&quot;Write a checker function that takes a Program instance as input and checks the following requirement: &quot;</span>
+        <span class="n">postPrompt</span> <span class="o">=</span> <span class="s2">&quot; Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown.</span><span class="se">\n</span><span class="s2">The solution shall be runnable offline.&quot;</span>
+        <span class="c1"># Point to the local server</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:1234/v1&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;lm-studio&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">req_id</span><span class="p">,</span> <span class="n">req_text</span> <span class="ow">in</span> <span class="n">REQ</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span><span class="n">startPrompt</span> <span class="o">+</span> <span class="n">req_text</span> <span class="o">+</span> <span class="n">postPrompt</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NR_OF_TRIES_PER_MODEL_REQ_PAIR</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">completion</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                        <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+                            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">},</span>
+                            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}</span>
+                        <span class="p">],</span>
+                        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                        <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">8192</span>
+                    <span class="p">)</span>
+                    <span class="n">response_content</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./LLM_Generated/</span><span class="si">{</span><span class="n">req_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">.py&quot;</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="s2"># Model: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span>
+    <span class="s2"># Prompt: </span>
+    <span class="s2"># </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span>
+    <span class="s2"># Generation time: </span><span class="si">{</span><span class="p">(</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds</span>
+    <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+                        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response_content</span><span class="p">)</span>
+    
+    
+    <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">()</span>
+    </pre></div>
+    
+<h2>Evaluating the Generated Solutions</h2>
+<a href="./content/REQ1.html">Requirement 1: Variable Descriptions and Comments shall be in English</a>
