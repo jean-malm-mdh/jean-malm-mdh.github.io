@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+</html>
+<h1>Overall Comments</h1>
+<p>Solutions have picked up on how to find the information in the framework.
+    Overall the solutions are quite close to expected solutions.
+    Solutions vary mostly in how the issues are reported.
+</p>
+<h2>Solution 1</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no variable names shall be longer than 30 characters. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:10.859597 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_length</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variable </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="si">}</span><span class="s2"> has a name longer than 30 characters.&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;All variable names are within the allowed length of 30 characters or less.&quot;</span>
+    
+    </pre></div>
+    
+
+<h3>Comments</h3>
+<p class="review">Solution terminate on the first violation found.
+</p>
+
+<h2>Solution 2</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no variable names shall be longer than 30 characters. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:10.189856 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_names_length</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="n">max_length</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">violations</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
+                <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is longer than </span><span class="si">{</span><span class="n">max_length</span><span class="si">}</span><span class="s2"> characters.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">violations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;All variable names are within the length limit.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">violations</span><span class="p">)</span>
+    
+    </pre></div>
+    
+    
+    
+<h3>Comments</h3>
+<p class="review">Overall the neatest solution. all violations are captured at once and code is refactored for modifiability.
+</p>
+<h2>Solution 3</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no variable names shall be longer than 30 characters. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:08.006936 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_name_length</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="n">max_length</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable name &#39;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; exceeds the maximum allowed length of </span><span class="si">{</span><span class="n">max_length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    </pre></div>
+
+<h2>Solution 4</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no variable names shall be longer than 30 characters. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:07.282045 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_names_length</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    </pre></div>
+        
+    <h2>Solution 5</h2>
+    <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+        <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no variable names shall be longer than 30 characters. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+        <span class="c1"># Generation time: 0:00:08.461615 seconds</span>
+        
+        <span class="k">def</span> <span class="nf">check_variable_name_length</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Variable name &#39;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; exceeds 30 character limit&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;All variable names are within the 30 character limit&quot;</span>
+        
+        </pre></div>

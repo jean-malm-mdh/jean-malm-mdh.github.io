@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+</html>
+<h1>Overall Comments</h1>
+<p>
+    The solutions are virtually identical - differing only in return types.
+    Solutions are identical to an expected solution. 
+    The solutions have correctly learned where to access the metric data. 
+</p>
+<h2>Solution 1</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the number of variables shall be less than 20. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:11.508057 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_limit</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s2">&quot;NrOfVariables&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Number of variables exceeds limit (20). Current count: </span><span class="si">{</span><span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s1">&#39;NrOfVariables&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Number of variables within limit.&quot;</span>
+    
+    </pre></div>
+    
+<h2>Solution 2</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the number of variables shall be less than 20. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:05.387687 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_limit</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s2">&quot;NrOfVariables&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;FAIL: Number of variables exceeds limit (should be &lt; 20)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;PASS&quot;</span>
+    
+    </pre></div>
+    
+<h2>Solution 3</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the number of variables shall be less than 20. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:04.148172 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variables_limit</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s2">&quot;NrOfVariables&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    
+    </pre></div>
+    
+<h2>Solution 4</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the number of variables shall be less than 20. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:02.747012 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_variable_count</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s2">&quot;NrOfVariables&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">20</span>
+    
+    </pre></div>
+    
+<h2>Solution 5</h2>
+    <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+        <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the number of variables shall be less than 20. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+        <span class="c1"># Generation time: 0:00:05.155016 seconds</span>
+        
+        <span class="k">def</span> <span class="nf">check_variable_limit</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s2">&quot;NrOfVariables&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;The number of variables exceeds the limit (20).&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+        
+        </pre></div>
+        
