@@ -9,7 +9,7 @@
 <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
     <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no signal lines shall overlap or cross over. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
     <span class="c1"># Generation time: 0:00:13.517062 seconds</span>
-    <span class="err">```</span>
+    
     <span class="k">def</span> <span class="nf">check_signal_lines</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
         <span class="c1"># Get all signal lines</span>
         <span class="n">signal_lines</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">getSignalLines</span><span class="p">()</span>
@@ -24,7 +24,7 @@
                     <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">other_line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">other_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                         <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Signal lines overlap or cross over</span>
         <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># No overlapping signal lines found</span>
-    <span class="err">```</span>
+    
     </pre></div>
 
 <h3>Comments</h3>
@@ -35,7 +35,7 @@
 <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
     <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no signal lines shall overlap or cross over. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
     <span class="c1"># Generation time: 0:00:14.908229 seconds</span>
-    <span class="err">```</span>
+    
     <span class="k">def</span> <span class="nf">check_signal_lines_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
         <span class="c1"># Initialize a set to store overlapping signal lines</span>
         <span class="n">overlapping_signals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -56,17 +56,18 @@
                     <span class="n">overlapping_signals</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
     
         <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># No overlapping signals found</span>
-    <span class="err">```</span>
+    
     </pre></div>
     
     
 <h3>Comments</h3>
 <p class="review">The solution seems to consider only the names of the inputs => Requirement needs to be clarified further.
 </p>
+<h2>Solution 3</h2>
 <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
     <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no signal lines shall overlap or cross over. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
     <span class="c1"># Generation time: 0:00:08.596431 seconds</span>
-    <span class="err">```</span>
+    
     <span class="k">def</span> <span class="nf">check_no_signal_lines_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getBlock</span><span class="p">(),</span> <span class="n">SignalBlock</span><span class="p">):</span>
@@ -75,7 +76,7 @@
                     <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">expr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">expr</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">]:</span>
                         <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
-    <span class="err">```</span>
+    
     </pre></div>
     
     
@@ -132,7 +133,7 @@
     <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
         <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no signal lines shall overlap or cross over. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
         <span class="c1"># Generation time: 0:00:11.669590 seconds</span>
-        <span class="err">```</span>
+        
         <span class="k">def</span> <span class="nf">check_signal_lines</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviour_Elements</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">SignalLineBlock</span><span class="p">):</span>
@@ -147,7 +148,7 @@
             <span class="c1"># Check if the two blocks intersect</span>
             <span class="c1"># This function can be implemented based on the geometric information of the blocks</span>
             <span class="k">pass</span>
-        <span class="err">```</span>
+        
         </pre></div>
         
         
