@@ -8,6 +8,7 @@
 Most solutions offload the complexity calculation to utility functions.
 Solutions found different ways to access program's inputs.
 Two solutions give suggestions for some complexity metric values to use.
+None of the solutions accounted for looking at the actual usage of variables through the input blocks.
 </p>
 <h2>Solution 1</h2>
 <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
@@ -54,20 +55,10 @@ Two solutions give suggestions for some complexity metric values to use.
     
     </pre></div>
     
-<h2>Solution 3</h2>
-<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
-    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no signal lines shall overlap or cross over. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
-    <span class="c1"># Generation time: 0:00:08.596431 seconds</span>
-    
-    <span class="k">def</span> <span class="nf">check_no_signal_lines_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getBlock</span><span class="p">(),</span> <span class="n">SignalBlock</span><span class="p">):</span>
-                <span class="n">path</span> <span class="o">=</span> <span class="n">PathDivide</span><span class="o">.</span><span class="n">unpack_pathlist</span><span class="p">([</span><span class="n">program</span><span class="o">.</span><span class="n">getBackwardTrace</span><span class="p">()[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]])</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">expr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">expr</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">]:</span>
-                        <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    
+<h3>Comments</h3>
+<p class="review">Complexity numbers based purely on input type. This is close to the expected solution.
+</p>
+<h2>Solution 3</h2>    
     </pre></div><div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
         <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
         <span class="c1"># Generation time: 0:00:18.876960 seconds</span>
@@ -98,6 +89,10 @@ Two solutions give suggestions for some complexity metric values to use.
         
         </pre></div>
 
+        <h3>Comments</h3>
+        <p class="review">The solution has separated out constant expressions. Some hallucination in the comments (it does not special handle boolean types).
+        </p>
+
 <h2>Solution 4</h2>
 <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
     <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
@@ -122,6 +117,10 @@ Two solutions give suggestions for some complexity metric values to use.
             <span class="k">return</span> <span class="s2">&quot;Program input complexity check passed.&quot;</span>
     
     </pre></div>
+
+    <h3>Comments</h3>
+    <p class="review">Some hallucination of where the complexity for variables would be stored.
+    </p>
     
     <h2>Solution 5</h2>
     <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
