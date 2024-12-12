@@ -1,0 +1,143 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+</html>
+<h1>Overall Comments</h1>
+<p>The generated solutions has exposed enough functionality of the framework for a user that understands the logic of checking overlaps between 2D-rectangles to modify the code into a working version.</p>
+<h2>Solution 1</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no blocks shall overlap. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:09.087853 seconds</span>
+    <span class="k">def</span> <span class="nf">check_no_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">):</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">getBlocks</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">VarBlock</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">other_block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">other_block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">block</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_block</span><span class="p">,</span> <span class="n">VarBlock</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">getStart</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">other_block</span><span class="o">.</span><span class="n">getEnd</span><span class="p">()</span> <span class="ow">or</span> <span class="n">other_block</span><span class="o">.</span><span class="n">getStart</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">block</span><span class="o">.</span><span class="n">getEnd</span><span class="p">()):</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    </pre></div>
+
+<h3>Comments</h3>
+<p class="review">Solution has hallucinated some part of the API (getBlocks() does not exist). The logical check for overlapping of blocks is mostly incorrect.
+</p>
+
+<h2>Solution 2</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no blocks shall overlap. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:02:10.442581 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_no_blocks_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="n">behaviour_elements</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">behaviour_elements</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">behaviour_elements</span><span class="p">)):</span>
+                <span class="n">element1</span> <span class="o">=</span> <span class="n">behaviour_elements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">element2</span> <span class="o">=</span> <span class="n">behaviour_elements</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element1</span><span class="p">,</span> <span class="n">Block</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element2</span><span class="p">,</span> <span class="n">Block</span><span class="p">):</span>
+                    <span class="c1"># Check if the blocks overlap</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">element1</span><span class="o">.</span><span class="n">x0</span> <span class="o">&lt;=</span> <span class="n">element2</span><span class="o">.</span><span class="n">x1</span> <span class="ow">and</span> <span class="n">element1</span><span class="o">.</span><span class="n">x1</span> <span class="o">&gt;=</span> <span class="n">element2</span><span class="o">.</span><span class="n">x0</span><span class="p">)</span> <span class="ow">or</span> \
+                       <span class="p">(</span><span class="n">element2</span><span class="o">.</span><span class="n">x0</span> <span class="o">&lt;=</span> <span class="n">element1</span><span class="o">.</span><span class="n">x1</span> <span class="ow">and</span> <span class="n">element2</span><span class="o">.</span><span class="n">x1</span> <span class="o">&gt;=</span> <span class="n">element1</span><span class="o">.</span><span class="n">x0</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    </pre></div>
+    
+    
+<h3>Comments</h3>
+<p class="review">Solution has correctly identified where to find blocks. Due to hallucinated naming of properties, it is difficult to determine the level of correctness in the logic.
+</p>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no blocks shall overlap. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:57.650105 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_no_blocks_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">):</span>
+        <span class="n">forward_flow</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">forward_flow</span>
+        <span class="n">backward_flow</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">backward_flow</span>
+        
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">FunctionBlock</span><span class="p">)</span> <span class="ow">and</span> <span class="n">block</span><span class="o">.</span><span class="n">getBlockType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;FunctionBlock&quot;</span><span class="p">:</span>
+                <span class="c1"># Check forward flow</span>
+                <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PathDivide</span><span class="o">.</span><span class="n">unpack_pathlist</span><span class="p">(</span><span class="n">forward_flow</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">getID</span><span class="p">()])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">p</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">:</span>
+                        <span class="n">other_block</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviour_</span> <span class="n">id_map</span><span class="p">[</span><span class="n">dependency</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_block</span><span class="p">,</span> <span class="n">FunctionBlock</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other_block</span><span class="o">.</span><span class="n">getBlockType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;FunctionBlock&quot;</span><span class="p">:</span>
+                            <span class="c1"># Check overlap</span>
+                            <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">getBoundaryBox</span><span class="p">()</span><span class="o">.</span><span class="n">overlaps</span><span class="p">(</span><span class="n">other_block</span><span class="o">.</span><span class="n">getBoundaryBox</span><span class="p">()):</span>
+                                <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">Port</span><span class="p">)</span> <span class="ow">and</span> <span class="n">block</span><span class="o">.</span><span class="n">getBlockType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Port&quot;</span><span class="p">:</span>
+                <span class="c1"># Check backward flow</span>
+                <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PathDivide</span><span class="o">.</span><span class="n">unpack_pathlist</span><span class="p">(</span><span class="n">backward_flow</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">getID</span><span class="p">()])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">p</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">:</span>
+                        <span class="n">other_block</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviour_id_map</span><span class="p">[</span><span class="n">dependency</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other_block</span><span class="p">,</span> <span class="n">Port</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other_block</span><span class="o">.</span><span class="n">getBlockType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Port&quot;</span><span class="p">:</span>
+                            <span class="c1"># Check overlap</span>
+                            <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">getBoundaryBox</span><span class="p">()</span><span class="o">.</span><span class="n">overlaps</span><span class="p">(</span><span class="n">other_block</span><span class="o">.</span><span class="n">getBoundaryBox</span><span class="p">()):</span>
+                                <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">return</span> <span class="kc">True</span>
+    </pre></div>
+    
+
+
+    <h3>Comments</h3>
+    <p class="review">Solution only checks overlaps within the same network of blocks. 
+        Solution utilises a getter for the boundary box => inspiration for modifications of the API.
+        Solution has identified the ability to determine different block types.
+    </p>
+
+<h2>Solution 4</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no blocks shall overlap. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:07.141984 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_no_blocks_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="n">block_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">behaviour_id</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">behaviour_id</span><span class="p">,</span> <span class="n">BlockID</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">behaviour_id</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">block_ids</span><span class="p">:</span>
+                    <span class="c1"># Overlap detected</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">block_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">behaviour_id</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    </pre></div>
+    
+
+
+    <h3>Comments</h3>
+    <p class="review">Confused the requirement with checking for blocks with duplicated IDs. "Overlap" needs clarification.
+    </p>
+    
+    <h2>Solution 5</h2>
+    <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+        <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no blocks shall overlap. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+        <span class="c1"># Generation time: 0:00:14.665060 seconds</span>
+        
+        <span class="k">def</span> <span class="nf">check_no_blocks_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+            <span class="n">block_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">program</span><span class="o">.</span><span class="n">behaviour_</span> <span class="n">id_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">block_ids</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">block_ids</span><span class="p">)):</span>
+                    <span class="n">block_id1</span> <span class="o">=</span> <span class="n">block_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">block_id2</span> <span class="o">=</span> <span class="n">block_ids</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    
+                    <span class="c1"># Get the boundary boxes of the two blocks</span>
+                    <span class="n">block1</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviour_</span> <span class="n">id_map</span><span class="p">[</span><span class="n">block_id1</span><span class="p">]</span>
+                    <span class="n">block2</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviour_</span> <span class="n">id_map</span><span class="p">[</span><span class="n">block_id2</span><span class="p">]</span>
+                    
+                    <span class="c1"># Check if they overlap</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">block1</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">boundary_box</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">block2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">boundary_box</span><span class="o">.</span><span class="n">x</span> <span class="ow">or</span>
+                            <span class="n">block2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">boundary_box</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">block1</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">boundary_box</span><span class="o">.</span><span class="n">x</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blocks </span><span class="si">{</span><span class="n">block_id1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">block_id2</span><span class="si">}</span><span class="s2"> overlap.&quot;</span><span class="p">)</span>
+        
+        </pre></div>
+        
+<h3>Comments</h3>
+<p class="review">Solution has correctly identified the actual way to access coordinates. 
+    Only considers one dimension. Does not consider the size of the boxes at all.</p>
