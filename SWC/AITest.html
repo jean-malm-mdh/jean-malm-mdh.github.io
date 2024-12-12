@@ -3,6 +3,10 @@
 
 <h2>The Generation Script</h2>
 <p>The following is the script used to generate a number of solutions for each requirement.</p>
+<p>The generator uses <a href="https://github.com/jean-malm-mdh/draconis/blob/main/AST/program.py">Program.py</a> to load the framework context. 
+    This is a somewhat special case, as the framework is small enough to be fed into the system prompt in its entirety.
+    
+</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
     <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
     
@@ -69,3 +73,10 @@
     
 <h2>Evaluating the Generated Solutions</h2>
 <a href="./content/REQ1.html">Requirement 1: Variable Descriptions and Comments shall be in English</a>
+<a href="./content/REQ2.html">Requirement 2: No blocks shall overlap</a>
+<a href="./content/REQ3.html">Requirement 3: No signal lines shall overlap or cross over.</a>
+<a href="./content/REQ4.html">Requirement 4: The number of variables shall be less than 20.</a>
+<a href="./content/REQ5.html">Requirement 5: No variable names shall be longer than 30 characters.</a>
+<a href="./content/REQ6.html">Requirement 6: the combined complexity of program inputs shall not exceed 100.</a>
+
+<h2>Summary</h2>

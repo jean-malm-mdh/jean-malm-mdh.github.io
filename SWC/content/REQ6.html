@@ -1,0 +1,144 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+</html>
+<h1>Overall Comments</h1>
+<p>
+Most solutions offload the complexity calculation to utility functions.
+Solutions found different ways to access program's inputs.
+Two solutions give suggestions for some complexity metric values to use.
+</p>
+<h2>Solution 1</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:12.813948 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_program_input_complexity</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">getMetrics</span><span class="p">()[</span><span class="s2">&quot;NrInputVariables&quot;</span><span class="p">]</span>
+        <span class="n">max_complexity</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">total_complexity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">complexity</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getVarsByType</span><span class="p">(</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">InputVar</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">total_complexity</span> <span class="o">&gt;</span> <span class="n">max_complexity</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: The combined complexity of program inputs (</span><span class="si">{</span><span class="n">total_complexity</span><span class="si">}</span><span class="s2">) exceeds the limit of </span><span class="si">{</span><span class="n">max_complexity</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;All good!&quot;</span>
+    
+    </pre></div>
+    
+<h2>Solution 2</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:20.107007 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_program_input_complexity</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="c1"># Get all input variables</span>
+        <span class="n">input_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">InputVar</span><span class="p">]</span>
+        
+        <span class="c1"># Calculate the complexity of each variable</span>
+        <span class="n">var_complexities</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_vars</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_vars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Boolean&quot;</span><span class="p">:</span>
+                <span class="n">var_complexities</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Numeric&quot;</span><span class="p">:</span>
+                <span class="n">var_complexities</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">5</span>
+            <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Subsystem&quot;</span><span class="p">:</span>
+                <span class="n">var_complexities</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">10</span>
+        
+        <span class="c1"># Calculate the total complexity of input variables</span>
+        <span class="n">total_complexity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">var_complexities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        
+        <span class="k">if</span> <span class="n">total_complexity</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Combined complexity of program inputs exceeds 100: </span><span class="si">{</span><span class="n">total_complexity</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;Program input complexity is within limits&quot;</span>
+    
+    </pre></div>
+    
+<h2>Solution 3</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: no signal lines shall overlap or cross over. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:08.596431 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_no_signal_lines_overlap</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">getBlock</span><span class="p">(),</span> <span class="n">SignalBlock</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">PathDivide</span><span class="o">.</span><span class="n">unpack_pathlist</span><span class="p">([</span><span class="n">program</span><span class="o">.</span><span class="n">getBackwardTrace</span><span class="p">()[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]])</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">expr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">expr</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">behaviourElements</span><span class="p">]:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    </pre></div><div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+        <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+        <span class="c1"># Generation time: 0:00:18.876960 seconds</span>
+        
+        <span class="k">def</span> <span class="nf">check_input_complexity</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+            <span class="c1"># Initialize a counter for input complexity</span>
+            <span class="n">total_complexity</span> <span class="o">=</span> <span class="mi">0</span>
+            
+            <span class="c1"># Iterate over all variables in the program</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">varHeader</span><span class="o">.</span><span class="n">getAllVariables</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">InputVar</span><span class="p">:</span>
+                    <span class="c1"># Check if the variable is of type Boolean, numeric or subsystem</span>
+                    <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">getExpression</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                        <span class="c1"># If it&#39;s a constant expression, increment complexity by 2</span>
+                        <span class="n">total_complexity</span> <span class="o">+=</span> <span class="mi">2</span>
+                    <span class="k">elif</span> <span class="n">var</span><span class="o">.</span><span class="n">getExpression</span><span class="p">()</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
+                        <span class="c1"># If it&#39;s a numeric expression, increment complexity by 5</span>
+                        <span class="n">total_complexity</span> <span class="o">+=</span> <span class="mi">5</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># For all other expressions, increment complexity by 10</span>
+                        <span class="n">total_complexity</span> <span class="o">+=</span> <span class="mi">10</span>
+            
+            <span class="c1"># Check if the total complexity exceeds 100</span>
+            <span class="k">if</span> <span class="n">total_complexity</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Error: Total input complexity exceeds 100&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Total input complexity: </span><span class="si">{</span><span class="n">total_complexity</span><span class="si">}</span><span class="s2">&quot;</span>
+        
+        </pre></div>
+
+<h2>Solution 4</h2>
+<div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+    <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+    <span class="c1"># Generation time: 0:00:13.895595 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">check_program_input_complexity</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+        <span class="c1"># Initialize a variable to hold the total complexity</span>
+        <span class="n">total_complexity</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="c1"># Iterate over each input variable in the program</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">program</span><span class="o">.</span><span class="n">getVarsByType</span><span class="p">(</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">InputVar</span><span class="p">):</span>
+            <span class="c1"># Get the complexity of the current input variable</span>
+            <span class="n">complexity</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">getVarInfo</span><span class="p">()[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;Complexity&quot;</span><span class="p">]</span>
+            
+            <span class="c1"># Add the complexity to the total</span>
+            <span class="n">total_complexity</span> <span class="o">+=</span> <span class="n">complexity</span>
+        
+        <span class="c1"># Check if the total complexity exceeds 100</span>
+        <span class="k">if</span> <span class="n">total_complexity</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: The combined complexity of program inputs exceeds 100. Total complexity is </span><span class="si">{</span><span class="n">total_complexity</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Program input complexity check passed.&quot;</span>
+    
+    </pre></div>
+    
+    <h2>Solution 5</h2>
+    <div class="highlight"><pre><span></span><span class="c1"># Model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF</span>
+        <span class="c1"># Prompt: Write a checker function that takes a Program instance as input and checks the following requirement: the combined complexity of program inputs shall not exceed 100. Only provide python code, and no explanations outside of inline-comments. Do not format it as markdown. The solution shall be runnable offline.</span>
+        <span class="c1"># Generation time: 0:00:08.875127 seconds</span>
+        
+        <span class="k">def</span> <span class="nf">check_program_input_complexity</span><span class="p">(</span><span class="n">program</span><span class="p">):</span>
+            <span class="c1"># Get all input variables</span>
+            <span class="n">input_vars</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">getVarsByType</span><span class="p">(</span><span class="n">VariableType</span><span class="o">.</span><span class="n">InputVar</span><span class="p">)</span>
+        
+            <span class="c1"># Calculate the complexity of each variable</span>
+            <span class="n">complexities</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">getComplexity</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_vars</span><span class="p">]</span>
+        
+            <span class="c1"># Check if sum of complexities does not exceed 100</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">complexities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        
+        </pre></div>
